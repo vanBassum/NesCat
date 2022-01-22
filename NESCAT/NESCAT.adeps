@@ -9,13 +9,5 @@
         <Version>1.0.6</Version>
       </Key>
     </Dependency>
-    <Dependency>
-      <Type>Library</Type>
-      <Key>
-        <Packager>Bill Greiman &lt;fat16lib@sbcglobal.net&gt;</Packager>
-        <Name>SdFat</Name>
-        <Version>1.0.5</Version>
-      </Key>
-    </Dependency>
   </Dependencies>
 </ArduinoDependencyCollection>
