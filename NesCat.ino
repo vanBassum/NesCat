@@ -68,14 +68,15 @@
 
 //================================================================================
 
-#define PIN_UP     36  //SVN
-#define PIN_DOWN   39  //IO35
-#define PIN_LEFT   34  //SVP
-#define PIN_RIGHT  35  //IO34
-#define PIN_A      32   //IO2
-#define PIN_B      33  //TMS
-#define PIN_START  25  //TDO
-#define PIN_SELECT 26  //TCK
+#define PIN_START   23
+#define PIN_LEFT    22
+#define PIN_RIGHT   01
+#define PIN_UP      03
+#define PIN_DOWN    21
+#define PIN_B       19
+#define PIN_SELECT  18
+#define PIN_A       05
+   
 
 ///!!! do not forget 1KOHM resistors
 
@@ -991,14 +992,21 @@ char* NESMENU() {
     while (1) {};
   }
   while (num < nMaxfiles && file.openNext(&dirFile, O_READ)) {
-
+    Serial.print("File ");
     
     // Skip directories and hidden files.
-    if (!file.isSubDir() && !file.isHidden()) {
+    if (!file.isSubDir() && !file.isHidden()) 
+    {
+      for (uint8_t i = sizeof(filename[num]); i > 3; i--) 
+        filename[num][i] = 0;
+        
       file.getName(filename[num], MAXFILENAME_LENGTH);
-      for (uint8_t i = sizeof(filename[num]); i > 3; i--) filename[num][i] = 0;
-      for (uint8_t i = sizeof(filename[num]); i > 3; i--) {
-        if (filename[num][i] != 0) {
+      Serial.println(filename[num]);
+
+      for (uint8_t i = sizeof(filename[num]); i > 3; i--) 
+      {
+        if (filename[num][i] != 0) 
+        {
           fileext[num][3] = '\0';
           fileext[num][2] = filename[num][i];
           fileext[num][1] = filename[num][i - 1];
@@ -1009,11 +1017,10 @@ char* NESMENU() {
       //check NES File extension, then increase index
       if ((fileext[num][0] == 'N' || fileext[num][0] == 'n')
           && (fileext[num][1] == 'E' || fileext[num][1] == 'e')
-          && (fileext[num][2] == 'S' || fileext[num][2] == 's')) {
+          && (fileext[num][2] == 'S' || fileext[num][2] == 's')) 
+      {
         num++;
-
       }
-      
     }
      
     loadedFileNames = num;
@@ -1057,38 +1064,48 @@ char* NESMENU() {
     //PROCESS CURSOR SELECTION
 
     if (digitalRead(PIN_A) == 1) {
+      Serial.println("A");
       JOY_CROSS = 1;  //A
       delay(200);
     }
     if (digitalRead(PIN_B) == 1) {
+      Serial.println("B");
       JOY_SQUARE = 1;   //B
       delay(200);
     }
     if (digitalRead(PIN_SELECT) == 1) {
       JOY_OPTIONS = 1;   //SELECT
+      Serial.println("SELECT");
       delay(200);
     }
     if (digitalRead(PIN_START) == 1) {
       JOY_SHARE = 1;   //START
+      Serial.println("START");
       delay(200);
     }
     if (digitalRead(PIN_UP) == 1) {
       JOY_UP = 1;
+      Serial.println("UP");
       delay(200);
     }
     if (digitalRead(PIN_DOWN) == 1) {
       JOY_DOWN = 1;   //DOWN
+      Serial.println("DOWN");
       delay(200);
     }
     if (digitalRead(PIN_LEFT) == 1) {
       JOY_LEFT = 1;   //LEFT
+      Serial.println("LEFT");
       delay(200);
     }
+    
     if (digitalRead(PIN_RIGHT) == 1) {
       JOY_RIGHT = 1;   //RIGHT
+      Serial.println("RIGHT");
       delay(200);
     }
 
+    //JOY_CROSS = 1;
 
 
     //Empty Cursor
