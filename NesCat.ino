@@ -99,10 +99,12 @@
 #define TFT_SCLK 18  // Clock out (SCL) //better not change
 
 //micro_SD_Card:
-#define SOFTSD_MOSI_PIN (GPIO_NUM_17)
-#define SOFTSD_MISO_PIN (GPIO_NUM_16)
-#define SOFTSD_SCK_PIN (GPIO_NUM_21)
-#define SD_CS_PIN GPIO_NUM_22
+#define SD_CS_PIN       GPIO_NUM_2
+#define SOFTSD_SCK_PIN  GPIO_NUM_4
+#define SOFTSD_MOSI_PIN GPIO_NUM_16
+#define SOFTSD_MISO_PIN GPIO_NUM_17
+
+
 
 //================================================================================
 
