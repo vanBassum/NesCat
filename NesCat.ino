@@ -92,17 +92,21 @@
 #define I2S_DI_IO  (-1)
 
 //LCD_ST7789:
-#define TFT_CS    3 // define chip select pin
-#define TFT_DC   21  // define data/command pin
-#define TFT_RST  19
-#define TFT_MOSI 23 // Data out (SDA) //better not change
-#define TFT_SCLK 18  // Clock out (SCL) //better not change
+#define TFT_CS   15  // define chip select pin
+#define TFT_DC   04  // define data/command pin
+#define TFT_RST  02
+#define TFT_MOSI 16 // Data out (SDA) //better not change
+#define TFT_SCLK 17  // Clock out (SCL) //better not change
+#define TFT_MISO 18  // Clock out (SCL) //better not change
+#define TFT_WIDTH  240
+#define TFT_HEIGHT 320
 
 //micro_SD_Card:
 #define SOFTSD_MOSI_PIN (GPIO_NUM_17)
 #define SOFTSD_MISO_PIN (GPIO_NUM_16)
 #define SOFTSD_SCK_PIN (GPIO_NUM_21)
 #define SD_CS_PIN GPIO_NUM_22
+
 
 //================================================================================
 
@@ -207,7 +211,8 @@ const uint16_t nes_16bit[64] = {
 
 //LCD_ST7789:
 #include <Adafruit_GFX.h>    // Core graphics library
-#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
+#include <Adafruit_ILI9341.h>
+//#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 #include <SPI.h>
 
 //micro_SD_Card:
@@ -223,13 +228,14 @@ const uint16_t nes_16bit[64] = {
 //--------------------------------------------------------------------------------
 
 //LCD_ST7789
-#define ST7789_DRIVER     // Configure all registers
-#define TFT_WIDTH  240
-#define TFT_HEIGHT 240
+#define ILI9431_DRIVER
+//#define ST7789_DRIVER     // Configure all registers
 #define LOAD_GLCD   // Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
 #define LOAD_FONT2  // Font 2. Small 16 pixel high font, needs ~3534 bytes in FLASH, 96 characters
 #define LOAD_FONT4  // Font 4. Medium 26 pixel high font, needs ~5848 bytes in FLASH, 96 characters
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
+//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 //micro_SD_Card
 const uint8_t SOFT_MOSI_PIN = SOFTSD_MOSI_PIN;
@@ -5620,11 +5626,12 @@ void setup() {
 //--------------------------------------------------------------------------------
 #ifdef LCD_ENABLED
   // if the display has CS pin try with SPI_MODE0
-  tft.init(240, 240, SPI_MODE2);    // Init ST7789 display 240x240 pixel
+  tft.begin();
+  //tft.init(240, 240, SPI_MODE2);    // Init ST7789 display 240x240 pixel
   // if the screen is flipped, remove this command
   tft.setRotation(3);
   tft.setSPISpeed(75000000);
-  tft.fillScreen(ST77XX_BLACK);
+  tft.fillScreen(ILI9341_BLACK);
 
   tft.println("NES CAT: MEOW!...");
 #endif
