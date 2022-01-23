@@ -58,38 +58,38 @@
 #define NES_FOLDER ("/NES/")
 
 #define BLUETOOTH_ENABLED
-#define KEYBOARD_ENABLED
+//#define KEYBOARD_ENABLED
 #define LCD_ENABLED true
 #define SOUND_ENABLED true
-#define COMPOSITE_VIDEO_ENABLED
+//#define COMPOSITE_VIDEO_ENABLED
 
 #define DEBUG true //Serial debugging enable.
 #define DEBUGEXTRA false //Extra Serial debugging enable.
 
 //================================================================================
 
-#define PIN_UP     39  //SVN
-#define PIN_DOWN   35  //IO35
-#define PIN_LEFT   36  //SVP
-#define PIN_RIGHT  34  //IO34
-#define PIN_A      2   //IO2
-#define PIN_B      14  //TMS
-#define PIN_START  15  //TDO
-#define PIN_SELECT 13  //TCK
+#define PIN_UP     36  //SVN
+#define PIN_DOWN   39  //IO35
+#define PIN_LEFT   34  //SVP
+#define PIN_RIGHT  35  //IO34
+#define PIN_A      32   //IO2
+#define PIN_B      33  //TMS
+#define PIN_START  25  //TDO
+#define PIN_SELECT 26  //TCK
 
 ///!!! do not forget 1KOHM resistors
 
-#define KEYBOARD_DATA 4  /// ---[ 1K ]--- // -D
-#define KEYBOARD_CLK 0  /// ---[ 1K ]--- // +D
+#define KEYBOARD_DATA 21  /// ---[ 1K ]--- // -D
+#define KEYBOARD_CLK  19 /// ---[ 1K ]--- // +D
 
 //COMPOSITE_VIDEO: - //DAC_GPIO25_CHANNEL or DAC_GPIO26_CHANNEL
 #define VIDEO_OUT (DAC_GPIO26_CHANNEL)
 
 //AUDIO_i2S:
-#define I2S_BCK_IO (GPIO_NUM_27) //BCK
-#define I2S_WS_IO  (GPIO_NUM_32) //LCK
-#define I2S_DO_IO  (GPIO_NUM_25) //DIN
-#define I2S_DI_IO  (-1)
+#define I2S_BCK_IO  23
+#define I2S_WS_IO   22 
+#define I2S_DO_IO   21
+#define I2S_DI_IO   19
 
 //LCD_ST7789:
 #define TFT_CS   15  // define chip select pin
@@ -992,16 +992,11 @@ char* NESMENU() {
   }
   while (num < nMaxfiles && file.openNext(&dirFile, O_READ)) {
 
-    file.getName(filename[num], MAXFILENAME_LENGTH);
-    Serial.println(filename[num]);
     
     // Skip directories and hidden files.
     if (!file.isSubDir() && !file.isHidden()) {
-
+      file.getName(filename[num], MAXFILENAME_LENGTH);
       for (uint8_t i = sizeof(filename[num]); i > 3; i--) filename[num][i] = 0;
-
-      
-
       for (uint8_t i = sizeof(filename[num]); i > 3; i--) {
         if (filename[num][i] != 0) {
           fileext[num][3] = '\0';
@@ -1018,7 +1013,9 @@ char* NESMENU() {
         num++;
 
       }
+      
     }
+     
     loadedFileNames = num;
     file.close();
   }
@@ -5657,35 +5654,6 @@ void setup() {
   } else {
     Serial.println("Wiring is correct and a card is present.");
   }
-
-  if (!file.open("test.txt", O_RDWR | O_CREAT | O_AT_END)) {
-    SD.errorHalt("opening test.txt for write failed");
-  }
-  // if the file opened okay, write to it:
-  Serial.println("Writing to test.txt...");
-  file.println("testing 1, 2, 3.");
-
-  // close the file:
-  file.close();
-
-
-  if (!dirFile.open(NES_FOLDER, O_READ)) {
-
-    SD.errorHalt("open root failed 1");
-    while (1) {};
-  }
-  char fname[MAXFILENAME_LENGTH];
-  int num = 0;
-  while (num < nMaxfiles && file.openNext(&dirFile, O_READ))
-  {
-    file.getName(fname, MAXFILENAME_LENGTH);
-    Serial.println(fname);
-    file.close();
-  }
-  if (DEBUG) {
-    Serial.print("Count of loaded File Names:");
-  }
-  
 //--------------------------------------------------------------------------------
 
   audiovideo_init(); //Init VIDEO Task and AUDIO I2S
