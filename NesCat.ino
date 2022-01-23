@@ -102,10 +102,10 @@
 #define TFT_HEIGHT 320
 
 //micro_SD_Card:
-#define SOFTSD_MOSI_PIN GPIO_NUM_25
-#define SOFTSD_MISO_PIN GPIO_NUM_26
-#define SOFTSD_SCK_PIN  GPIO_NUM_32
-#define SD_CS_PIN       GPIO_NUM_33
+#define SOFTSD_MISO_PIN 13
+#define SOFTSD_MOSI_PIN 12
+#define SOFTSD_SCK_PIN  14
+#define SD_CS_PIN       27
 
 
 //================================================================================
@@ -984,6 +984,7 @@ char* NESMENU() {
   num = 0;
   //Load List files in root directory.
   ///if (!dirFile.open("/", O_READ)) {
+ 
   if (!dirFile.open(NES_FOLDER, O_READ)) {
 
     SD.errorHalt("open root failed");
@@ -991,12 +992,15 @@ char* NESMENU() {
   }
   while (num < nMaxfiles && file.openNext(&dirFile, O_READ)) {
 
+    file.getName(filename[num], MAXFILENAME_LENGTH);
+    Serial.println(filename[num]);
+    
     // Skip directories and hidden files.
     if (!file.isSubDir() && !file.isHidden()) {
 
       for (uint8_t i = sizeof(filename[num]); i > 3; i--) filename[num][i] = 0;
 
-      file.getName(filename[num], MAXFILENAME_LENGTH);
+      
 
       for (uint8_t i = sizeof(filename[num]); i > 3; i--) {
         if (filename[num][i] != 0) {
@@ -5638,15 +5642,50 @@ void setup() {
 //--------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------
   tft.println("Initializing SD card...");
-  if (DEBUG) Serial.println("Initializing SD card...");
-  if (!SD.begin(SD_CS_PIN, SD_SCK_MHZ(5))) { ///SD max 10MHz!!!
+  
+  Serial.println("\nInitializing SD card...");
+  // we'll use the initialization code from the utility libraries
+  // since we're just testing if the card is working!
+  if (!SD.begin(SD_CS_PIN, SD_SCK_MHZ(5))) 
+  {
+    Serial.println("initialization failed. Things to check:");
+    Serial.println("* is a card inserted?");
+    Serial.println("* is your wiring correct?");
+    Serial.println("* did you change the chipSelect pin to match your shield or module?");
     tft.println("SD card initialization failed!");
-    if (DEBUG) Serial.println("SD card initialization failed!");
-    while (1) {}; //FREEZE
+    while (1);
   } else {
-    tft.println("SD card initialization done.");
-    if (DEBUG) Serial.println("SD card initialization done.");
+    Serial.println("Wiring is correct and a card is present.");
   }
+
+  if (!file.open("test.txt", O_RDWR | O_CREAT | O_AT_END)) {
+    SD.errorHalt("opening test.txt for write failed");
+  }
+  // if the file opened okay, write to it:
+  Serial.println("Writing to test.txt...");
+  file.println("testing 1, 2, 3.");
+
+  // close the file:
+  file.close();
+
+
+  if (!dirFile.open(NES_FOLDER, O_READ)) {
+
+    SD.errorHalt("open root failed 1");
+    while (1) {};
+  }
+  char fname[MAXFILENAME_LENGTH];
+  int num = 0;
+  while (num < nMaxfiles && file.openNext(&dirFile, O_READ))
+  {
+    file.getName(fname, MAXFILENAME_LENGTH);
+    Serial.println(fname);
+    file.close();
+  }
+  if (DEBUG) {
+    Serial.print("Count of loaded File Names:");
+  }
+  
 //--------------------------------------------------------------------------------
 
   audiovideo_init(); //Init VIDEO Task and AUDIO I2S
