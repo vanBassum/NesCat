@@ -92,10 +92,10 @@
 #define I2S_DI_IO  (-1)
 
 //LCD_ST7789:
-#define TFT_CS   -1  // define chip select pin
-#define TFT_DC    5  // define data/command pin
+#define TFT_CS    3 // define chip select pin
+#define TFT_DC   21  // define data/command pin
 #define TFT_RST  19
-#define TFT_MOSI 23  // Data out (SDA) //better not change
+#define TFT_MOSI 23 // Data out (SDA) //better not change
 #define TFT_SCLK 18  // Clock out (SCL) //better not change
 
 //micro_SD_Card:
