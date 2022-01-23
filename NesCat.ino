@@ -102,10 +102,10 @@
 #define TFT_HEIGHT 320
 
 //micro_SD_Card:
-#define SOFTSD_MOSI_PIN (GPIO_NUM_17)
-#define SOFTSD_MISO_PIN (GPIO_NUM_16)
-#define SOFTSD_SCK_PIN (GPIO_NUM_21)
-#define SD_CS_PIN GPIO_NUM_22
+#define SOFTSD_MOSI_PIN GPIO_NUM_25
+#define SOFTSD_MISO_PIN GPIO_NUM_26
+#define SOFTSD_SCK_PIN  GPIO_NUM_32
+#define SD_CS_PIN       GPIO_NUM_33
 
 
 //================================================================================
