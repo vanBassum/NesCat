@@ -58,52 +58,54 @@
 #define NES_FOLDER ("/NES/")
 
 #define BLUETOOTH_ENABLED
-#define KEYBOARD_ENABLED
+//#define KEYBOARD_ENABLED
 #define LCD_ENABLED true
 #define SOUND_ENABLED true
-#define COMPOSITE_VIDEO_ENABLED
+//#define COMPOSITE_VIDEO_ENABLED
 
 #define DEBUG true //Serial debugging enable.
 #define DEBUGEXTRA false //Extra Serial debugging enable.
 
 //================================================================================
 
-#define PIN_UP     39  //SVN
-#define PIN_DOWN   35  //IO35
-#define PIN_LEFT   36  //SVP
-#define PIN_RIGHT  34  //IO34
-#define PIN_A      2   //IO2
-#define PIN_B      14  //TMS
-#define PIN_START  15  //TDO
-#define PIN_SELECT 13  //TCK
+#define PIN_SELECT  36
+#define PIN_LEFT    39
+#define PIN_RIGHT   34
+#define PIN_UP      35
+#define PIN_DOWN    32
+#define PIN_B       33
+#define PIN_START   25
+#define PIN_A       26 
 
 ///!!! do not forget 1KOHM resistors
 
-#define KEYBOARD_DATA 4  /// ---[ 1K ]--- // -D
-#define KEYBOARD_CLK 0  /// ---[ 1K ]--- // +D
+#define KEYBOARD_DATA 21  /// ---[ 1K ]--- // -D
+#define KEYBOARD_CLK  19 /// ---[ 1K ]--- // +D
 
 //COMPOSITE_VIDEO: - //DAC_GPIO25_CHANNEL or DAC_GPIO26_CHANNEL
 #define VIDEO_OUT (DAC_GPIO26_CHANNEL)
 
 //AUDIO_i2S:
-#define I2S_BCK_IO (GPIO_NUM_27) //BCK
-#define I2S_WS_IO  (GPIO_NUM_32) //LCK
-#define I2S_DO_IO  (GPIO_NUM_25) //DIN
-#define I2S_DI_IO  (-1)
+#define I2S_BCK_IO  23
+#define I2S_WS_IO   22 
+#define I2S_DO_IO   21
+#define I2S_DI_IO   19
 
 //LCD_ST7789:
-#define TFT_CS    3 // define chip select pin
-#define TFT_DC   21  // define data/command pin
-#define TFT_RST  19
-#define TFT_MOSI 23 // Data out (SDA) //better not change
-#define TFT_SCLK 18  // Clock out (SCL) //better not change
+#define TFT_CS   15  // define chip select pin
+#define TFT_DC   04  // define data/command pin
+#define TFT_RST  02
+#define TFT_MOSI 16 // Data out (SDA) //better not change
+#define TFT_SCLK 17  // Clock out (SCL) //better not change
+#define TFT_MISO 18  // Clock out (SCL) //better not change
+#define TFT_WIDTH  240
+#define TFT_HEIGHT 320
 
 //micro_SD_Card:
-#define SD_CS_PIN       GPIO_NUM_2
-#define SOFTSD_SCK_PIN  GPIO_NUM_4
-#define SOFTSD_MOSI_PIN GPIO_NUM_16
-#define SOFTSD_MISO_PIN GPIO_NUM_17
-
+#define SOFTSD_MISO_PIN 13
+#define SOFTSD_MOSI_PIN 12
+#define SOFTSD_SCK_PIN  14
+#define SD_CS_PIN       27
 
 
 //================================================================================
@@ -209,7 +211,8 @@ const uint16_t nes_16bit[64] = {
 
 //LCD_ST7789:
 #include <Adafruit_GFX.h>    // Core graphics library
-#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
+#include <Adafruit_ILI9341.h>
+//#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 #include <SPI.h>
 
 //micro_SD_Card:
@@ -225,13 +228,14 @@ const uint16_t nes_16bit[64] = {
 //--------------------------------------------------------------------------------
 
 //LCD_ST7789
-#define ST7789_DRIVER     // Configure all registers
-#define TFT_WIDTH  240
-#define TFT_HEIGHT 240
+#define ILI9431_DRIVER
+//#define ST7789_DRIVER     // Configure all registers
 #define LOAD_GLCD   // Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
 #define LOAD_FONT2  // Font 2. Small 16 pixel high font, needs ~3534 bytes in FLASH, 96 characters
 #define LOAD_FONT4  // Font 4. Medium 26 pixel high font, needs ~5848 bytes in FLASH, 96 characters
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
+//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 //micro_SD_Card
 const uint8_t SOFT_MOSI_PIN = SOFTSD_MOSI_PIN;
@@ -980,22 +984,28 @@ char* NESMENU() {
   num = 0;
   //Load List files in root directory.
   ///if (!dirFile.open("/", O_READ)) {
+ 
   if (!dirFile.open(NES_FOLDER, O_READ)) {
 
     SD.errorHalt("open root failed");
     while (1) {};
   }
   while (num < nMaxfiles && file.openNext(&dirFile, O_READ)) {
-
+    Serial.print("File ");
+    
     // Skip directories and hidden files.
-    if (!file.isSubDir() && !file.isHidden()) {
-
-      for (uint8_t i = sizeof(filename[num]); i > 3; i--) filename[num][i] = 0;
-
+    if (!file.isSubDir() && !file.isHidden()) 
+    {
+      for (uint8_t i = sizeof(filename[num]); i > 3; i--) 
+        filename[num][i] = 0;
+        
       file.getName(filename[num], MAXFILENAME_LENGTH);
+      Serial.println(filename[num]);
 
-      for (uint8_t i = sizeof(filename[num]); i > 3; i--) {
-        if (filename[num][i] != 0) {
+      for (uint8_t i = sizeof(filename[num]); i > 3; i--) 
+      {
+        if (filename[num][i] != 0) 
+        {
           fileext[num][3] = '\0';
           fileext[num][2] = filename[num][i];
           fileext[num][1] = filename[num][i - 1];
@@ -1006,11 +1016,12 @@ char* NESMENU() {
       //check NES File extension, then increase index
       if ((fileext[num][0] == 'N' || fileext[num][0] == 'n')
           && (fileext[num][1] == 'E' || fileext[num][1] == 'e')
-          && (fileext[num][2] == 'S' || fileext[num][2] == 's')) {
+          && (fileext[num][2] == 'S' || fileext[num][2] == 's')) 
+      {
         num++;
-
       }
     }
+     
     loadedFileNames = num;
     file.close();
   }
@@ -1052,38 +1063,48 @@ char* NESMENU() {
     //PROCESS CURSOR SELECTION
 
     if (digitalRead(PIN_A) == 1) {
+      Serial.println("A");
       JOY_CROSS = 1;  //A
       delay(200);
     }
     if (digitalRead(PIN_B) == 1) {
+      Serial.println("B");
       JOY_SQUARE = 1;   //B
       delay(200);
     }
     if (digitalRead(PIN_SELECT) == 1) {
       JOY_OPTIONS = 1;   //SELECT
+      Serial.println("SELECT");
       delay(200);
     }
     if (digitalRead(PIN_START) == 1) {
       JOY_SHARE = 1;   //START
+      Serial.println("START");
       delay(200);
     }
     if (digitalRead(PIN_UP) == 1) {
       JOY_UP = 1;
+      Serial.println("UP");
       delay(200);
     }
     if (digitalRead(PIN_DOWN) == 1) {
       JOY_DOWN = 1;   //DOWN
+      Serial.println("DOWN");
       delay(200);
     }
     if (digitalRead(PIN_LEFT) == 1) {
       JOY_LEFT = 1;   //LEFT
+      Serial.println("LEFT");
       delay(200);
     }
+    
     if (digitalRead(PIN_RIGHT) == 1) {
       JOY_RIGHT = 1;   //RIGHT
+      Serial.println("RIGHT");
       delay(200);
     }
 
+    //JOY_CROSS = 1;
 
 
     //Empty Cursor
@@ -5622,25 +5643,32 @@ void setup() {
 //--------------------------------------------------------------------------------
 #ifdef LCD_ENABLED
   // if the display has CS pin try with SPI_MODE0
-  tft.init(240, 240, SPI_MODE2);    // Init ST7789 display 240x240 pixel
+  tft.begin();
+  //tft.init(240, 240, SPI_MODE2);    // Init ST7789 display 240x240 pixel
   // if the screen is flipped, remove this command
   tft.setRotation(3);
   tft.setSPISpeed(75000000);
-  tft.fillScreen(ST77XX_BLACK);
+  tft.fillScreen(ILI9341_BLACK);
 
   tft.println("NES CAT: MEOW!...");
 #endif
 //--------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------
   tft.println("Initializing SD card...");
-  if (DEBUG) Serial.println("Initializing SD card...");
-  if (!SD.begin(SD_CS_PIN, SD_SCK_MHZ(5))) { ///SD max 10MHz!!!
+  
+  Serial.println("\nInitializing SD card...");
+  // we'll use the initialization code from the utility libraries
+  // since we're just testing if the card is working!
+  if (!SD.begin(SD_CS_PIN, SD_SCK_MHZ(5))) 
+  {
+    Serial.println("initialization failed. Things to check:");
+    Serial.println("* is a card inserted?");
+    Serial.println("* is your wiring correct?");
+    Serial.println("* did you change the chipSelect pin to match your shield or module?");
     tft.println("SD card initialization failed!");
-    if (DEBUG) Serial.println("SD card initialization failed!");
-    while (1) {}; //FREEZE
+    while (1);
   } else {
-    tft.println("SD card initialization done.");
-    if (DEBUG) Serial.println("SD card initialization done.");
+    Serial.println("Wiring is correct and a card is present.");
   }
 //--------------------------------------------------------------------------------
 
