@@ -61,7 +61,7 @@
 //#define KEYBOARD_ENABLED
 #define LCD_ENABLED true
 #define SOUND_ENABLED true
-//#define COMPOSITE_VIDEO_ENABLED
+#define COMPOSITE_VIDEO_ENABLED
 
 #define DEBUG true //Serial debugging enable.
 #define DEBUGEXTRA false //Extra Serial debugging enable.
@@ -75,7 +75,7 @@
 #define PIN_DOWN    32
 #define PIN_B       33
 #define PIN_START   25
-#define PIN_A       26 
+#define PIN_A       02 
 
 ///!!! do not forget 1KOHM resistors
 
