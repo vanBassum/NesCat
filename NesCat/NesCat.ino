@@ -68,15 +68,14 @@
 
 //================================================================================
 
-#define PIN_START   23
-#define PIN_LEFT    22
-#define PIN_RIGHT   01
-#define PIN_UP      03
-#define PIN_DOWN    21
-#define PIN_B       19
-#define PIN_SELECT  18
-#define PIN_A       05
-   
+#define PIN_SELECT  36
+#define PIN_LEFT    39
+#define PIN_RIGHT   34
+#define PIN_UP      35
+#define PIN_DOWN    32
+#define PIN_B       33
+#define PIN_START   25
+#define PIN_A       26 
 
 ///!!! do not forget 1KOHM resistors
 
